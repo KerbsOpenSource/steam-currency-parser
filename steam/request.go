@@ -42,7 +42,7 @@ func priceOverviewMarket(appID string, currency string, marketHashName string) (
 	return &marketPrice, nil
 }
 
-func LowestPrice(appID string, currency string, marketHashName string) (string, error) {
+func LowestPrice(appID string, currency string, marketHashName string) string {
 	marketPrice, err := priceOverviewMarket(appID, currency, marketHashName)
 	if err != nil {
 		log.Fatal(err)
@@ -54,5 +54,5 @@ func LowestPrice(appID string, currency string, marketHashName string) (string, 
 		log.Fatal("Didn't get the lowest price")
 	}
 	LowestPrice := marketPrice.LowestPrice
-	return LowestPrice, err
+	return LowestPrice
 }

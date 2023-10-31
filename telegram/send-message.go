@@ -13,5 +13,7 @@ func SendMessage(text string, apiToken string, chatID string) {
 	postData.Set("chat_id", chatID)
 	postData.Set("text", text)
 	_, err := http.PostForm(baseURL, postData)
-	log.Fatal(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
