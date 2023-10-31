@@ -1,12 +1,38 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"steam-currency-parser-telegram/steam"
 	"steam-currency-parser-telegram/telegram"
 	"time"
 )
+
+func mustFlags() (tgBotToken, chatID, appID, marketHashName string, priceCorrertor float64) {
+	flag.StringVar(&tgBotToken, "token", "", "Telegram bot token")
+	flag.StringVar(&chatID, "chatid", "", "Telegram chat id")
+	flag.StringVar(&appID, "appid", "", "Steam appID")
+	flag.StringVar(&marketHashName, "hashname", "", "Steam market item hash name")
+	flag.Float64Var(&priceCorrertor, "pricecor", 1000.00, "Price corrector to get 1 unite price")
+
+	flag.Parse()
+	if tgBotToken == "" {
+		log.Fatal("Telegram token not found")
+	}
+	if chatID == "" {
+		log.Fatal("Telegram chat id not found flags")
+	}
+
+	if appID == "" {
+		log.Fatal("Steam app not found flags")
+	}
+
+	if marketHashName == "" {
+		log.Fatal("Steam market hash name not found flags")
+	}
+	return
+}
 
 func createCurrencyDictionary() map[string]string {
 	dictionary := make(map[string]string)
@@ -56,32 +82,20 @@ func createCurrencyDictionary() map[string]string {
 	return dictionary
 }
 
+// You need to find an item on the steam market that will serve as an item for a comparable price
+// You can write down how much you need to divide by to get values ​​for 1 unit
+// Example priceItem = 1000.00 USD, priceCorrertor = 1000.00, unitPrice = 1000 / 1000.00 = 1.00 USD
+// priceCorrertor := 1000.00
 func main() {
+	tgBotToken, chatID, appID, marketHashName, _ := mustFlags()
 	currencies := createCurrencyDictionary()
-	// You need to find an item on the steam market that will serve as an item for a comparable price
-	appID := ""
-	marketHashName := ""
-	// You can write down how much you need to divide by to get values ​​for 1 unit
-	// Example priceItem = 1000.00 USD, priceCorrertor = 1000.00, unitPrice = 1000 / 1000.00 = 1.00 USD
-	// priceCorrertor := 1000.00
-
-	for key, value := range currencies {
-		fmt.Println(key, value)
-		success := false
-		for !success {
-			time.Sleep(5 * time.Second)
-			marketPrice, err := steam.GetMarketPrice(appID, value, marketHashName)
-			if err != nil {
-				log.Fatal(err)
-				continue
-			}
-			if marketPrice == nil {
-				log.Fatal("Succes false")
-				continue
-			}
-			fmt.Printf("Market Price: %+v\n", marketPrice)
-			success = true
+	for _, value := range currencies {
+		time.Sleep(5 * time.Second)
+		marketPrice, err := steam.LowestPrice(appID, value, marketHashName)
+		if err != nil {
+			log.Fatal(err)
 		}
+		fmt.Printf("Market Price: %+v\n", marketPrice)
 	}
-	telegram.SendMessage("Hello, world!")
+	telegram.SendMessage("Hello, world!", tgBotToken, chatID)
 }

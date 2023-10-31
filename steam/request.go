@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -15,7 +16,7 @@ type MarketPrice struct {
 	MedianPrice string `json:"median_price"`
 }
 
-func GetMarketPrice(appID string, currency string, marketHashName string) (*MarketPrice, error) {
+func priceOverviewMarket(appID string, currency string, marketHashName string) (*MarketPrice, error) {
 	url := fmt.Sprintf("https://steamcommunity.com/market/priceoverview/?appid=%s&currency=%s&market_hash_name=%s", appID, currency, marketHashName)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -39,4 +40,19 @@ func GetMarketPrice(appID string, currency string, marketHashName string) (*Mark
 	}
 
 	return &marketPrice, nil
+}
+
+func LowestPrice(appID string, currency string, marketHashName string) (string, error) {
+	marketPrice, err := priceOverviewMarket(appID, currency, marketHashName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if marketPrice == nil {
+		log.Fatal("Succes false")
+	}
+	if marketPrice.LowestPrice == "" {
+		log.Fatal("Didn't get the lowest price")
+	}
+	LowestPrice := marketPrice.LowestPrice
+	return LowestPrice, err
 }
