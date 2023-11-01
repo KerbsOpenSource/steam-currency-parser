@@ -15,7 +15,7 @@ This approach makes it possible to check the whole currency base of Steam in rea
 > + ``-chatid`` — Telegram chat id ([@getmyid_bot](https://t.me/getmyid_bot))
 > + ``-appid`` — Steam app id (Dota 2 - "570" СS2 - "730" TF2 - "440")
 > + ``-hashname`` — Steam market item hash name (Lot name in URI encode)
-> + ``-pricecor`` — Price corrector to get 1 unite price (If the item costs 1000 then use 1000$)
+> + ``-pricecor`` — Price corrector to get 1 unite price (If the item costs 1000$ then use 1000)
 #### example: `main -token "<telegrambot_token>" -chatid "1234567" -appid "570" -hashname "Ruling%20Staff%20of%20the%20Priest%20Kings" "1"`
 
 #### You can use the cron daemon to run at a specified time. For example, every hour. But it would be better to make it run from a bash file.
