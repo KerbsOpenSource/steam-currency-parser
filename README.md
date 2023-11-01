@@ -9,6 +9,14 @@ At the time of writing the project I did not find any alternatives in open sourc
 >**My approach is based on real time adjustments based on the prices of exposed lots of items on steam market.
 This approach makes it possible to check the whole currency base of Steam in real time.**
 
+### Default currencies
++ EUR
++ CNY
++ JPY
++ AED
++ RUB
+> The USD currency is used for validity checks, as steam uses USD as the anchor currency.
+
 ## 🏃‍♂️ How to run
 ### Use the startup flags to customize
 > + ``-token`` — Telegram bot token ([@BotFather](https://telegram.me/BotFather))
