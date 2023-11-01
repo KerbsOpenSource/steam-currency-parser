@@ -39,7 +39,7 @@ func mustFlags() (tgBotToken, chatID, appID, marketHashName string, priceCorrert
 func currencyDictionary() map[string]string {
 	dictionary := make(map[string]string)
 
-	// dictionary["USD"] = "1" // United States Dollar
+	dictionary["USD"] = "1" // United States Dollar
 	// dictionary["GBP"] = "2"  // United Kingdom Pound
 	dictionary["EUR"] = "3" // European Union Euro
 	// dictionary["CHF"] = "4"  // Swiss Francs
@@ -89,6 +89,18 @@ func textMessageСurrency(currencies map[string]float64) string {
 	return textMessage
 }
 
+func correctValueUnite(value string, expected float64, appID string, marketHashName string, priceCorrertor int) {
+	marketPrice := steam.LowestPrice(appID, value, marketHashName)
+	priceInt, err := strconv.Atoi(regex.OnlyInt(marketPrice))
+	if err != nil {
+		log.Fatal(err)
+	}
+	total := float64(priceInt / priceCorrertor)
+	if total != expected {
+		log.Fatal("Failed to receive 1.00$. Check the lowest price of the lot and priceCorrertor WHEN DIVIDING we should receive 100")
+	}
+}
+
 // You need to find an item on the steam market that will serve as an item for a comparable price
 // You can write down how much you need to divide by to get values ​​for 1 unit
 // Example priceItem = 200000 USD, priceCorrertor = 1000, unitPrice = (200000/100) / (1000/100) = 200 = 2 / 100  = 2.00 USD
@@ -97,7 +109,11 @@ func main() {
 	tgBotToken, chatID, appID, marketHashName, priceCorrertor := mustFlags()
 	currencies := currencyDictionary()
 	resultCurrencies := make(map[string]float64)
+	correctValueUnite(currencies["USD"], 100, appID, marketHashName, priceCorrertor)
 	for key, value := range currencies {
+		if key == "USD" {
+			continue
+		}
 		time.Sleep(5 * time.Second)
 		marketPrice := steam.LowestPrice(appID, value, marketHashName)
 		priceInt, err := strconv.Atoi(regex.OnlyInt(marketPrice))
