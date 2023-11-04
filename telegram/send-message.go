@@ -7,8 +7,8 @@ import (
 	"net/url"
 )
 
-func SendMessage(text string, apiToken string, chatID string) {
-	baseURL := "https://api.telegram.org/bot" + apiToken + "/sendMessage"
+func SendMessage(text string, telegramBotToken string, chatID string) {
+	baseURL := "https://api.telegram.org/bot" + telegramBotToken + "/sendMessage"
 	postData := url.Values{}
 	postData.Set("chat_id", chatID)
 	postData.Set("text", text)

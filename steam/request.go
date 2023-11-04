@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -42,17 +41,11 @@ func priceOverviewMarket(appID string, currency string, marketHashName string) (
 	return &marketPrice, nil
 }
 
-func LowestPrice(appID string, currency string, marketHashName string) string {
+func LowestPrice(appID string, currency string, marketHashName string) (string, error) {
 	marketPrice, err := priceOverviewMarket(appID, currency, marketHashName)
-	if err != nil {
-		log.Fatal(err)
-	}
 	if marketPrice == nil {
-		log.Fatal("Succes false")
+		return "", err
 	}
-	if marketPrice.LowestPrice == "" {
-		log.Fatal("Didn't get the lowest price")
-	}
-	LowestPrice := marketPrice.LowestPrice
-	return LowestPrice
+	lowPrice := marketPrice.LowestPrice
+	return lowPrice, err
 }
