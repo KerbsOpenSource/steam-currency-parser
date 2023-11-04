@@ -11,15 +11,15 @@ import (
 	"time"
 )
 
-func mustFlags() (tgBotToken, chatID, appID, marketHashName string, priceCorrertor int) {
-	flag.StringVar(&tgBotToken, "token", "", "Telegram bot token")
+func mustFlags() (telegramBotToken, chatID, appID, marketHashName string, priceCorrertor int) {
+	flag.StringVar(&telegramBotToken, "token", "", "Telegram bot token")
 	flag.StringVar(&chatID, "chatid", "", "Telegram chat id")
 	flag.StringVar(&appID, "appid", "", "Steam appID")
 	flag.StringVar(&marketHashName, "hashname", "", "Steam market item hash name")
 	flag.IntVar(&priceCorrertor, "pricecor", 1000, "Price corrector to get 1 unite price")
 
 	flag.Parse()
-	if tgBotToken == "" {
+	if telegramBotToken == "" {
 		log.Fatal("Telegram token not found")
 	}
 	if chatID == "" {
@@ -90,10 +90,17 @@ func textMessageСurrency(currencies map[string]float64) string {
 }
 
 func correctValueUnite(value string, expected float64, appID string, marketHashName string, priceCorrertor int) {
-	marketPrice := steam.LowestPrice(appID, value, marketHashName)
-	priceInt, err := strconv.Atoi(regex.OnlyInt(marketPrice))
+	price, err := steam.LowestPrice(appID, value, marketHashName)
 	if err != nil {
 		log.Fatal(err)
+	}
+	if price == "" {
+		log.Fatal("Didn't get the lowest price")
+	}
+	priceInt, err := strconv.Atoi(regex.OnlyInt(price))
+	if err != nil {
+		log.Fatal(err)
+		return
 	}
 	total := float64(priceInt / priceCorrertor)
 	if total != expected {
@@ -106,7 +113,7 @@ func correctValueUnite(value string, expected float64, appID string, marketHashN
 // Example priceItem = 200000 USD, priceCorrertor = 1000, unitPrice = (200000/100) / (1000/100) = 200 = 2 / 100  = 2.00 USD
 // priceCorrertor := 1000.00
 func main() {
-	tgBotToken, chatID, appID, marketHashName, priceCorrertor := mustFlags()
+	telegramBotToken, chatID, appID, marketHashName, priceCorrertor := mustFlags()
 	currencies := currencyDictionary()
 	resultCurrencies := make(map[string]float64)
 	correctValueUnite(currencies["USD"], 100, appID, marketHashName, priceCorrertor)
@@ -114,9 +121,16 @@ func main() {
 		if key == "USD" {
 			continue
 		}
+		// Steam request limit
 		time.Sleep(5 * time.Second)
-		marketPrice := steam.LowestPrice(appID, value, marketHashName)
-		priceInt, err := strconv.Atoi(regex.OnlyInt(marketPrice))
+		price, err := steam.LowestPrice(appID, value, marketHashName)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if price == "" {
+			log.Fatal("Didn't get the lowest price")
+		}
+		priceInt, err := strconv.Atoi(regex.OnlyInt(price))
 		if err != nil {
 			log.Fatal(err)
 			return
@@ -124,5 +138,5 @@ func main() {
 		resultCurrencies[key] = float64(priceInt/priceCorrertor) / 100
 	}
 	textMessage := textMessageСurrency(resultCurrencies)
-	telegram.SendMessage(textMessage, tgBotToken, chatID)
+	telegram.SendMessage(textMessage, telegramBotToken, chatID)
 }
