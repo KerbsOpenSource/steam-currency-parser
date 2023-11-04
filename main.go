@@ -100,7 +100,6 @@ func correctValueUnite(value string, expected float64, appID string, marketHashN
 	priceInt, err := strconv.Atoi(regex.OnlyInt(price))
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 	total := float64(priceInt / priceCorrertor)
 	if total != expected {
@@ -133,7 +132,6 @@ func main() {
 		priceInt, err := strconv.Atoi(regex.OnlyInt(price))
 		if err != nil {
 			log.Fatal(err)
-			return
 		}
 		resultCurrencies[key] = float64(priceInt/priceCorrertor) / 100
 	}
