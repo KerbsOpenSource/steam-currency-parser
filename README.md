@@ -34,5 +34,5 @@ This approach makes it possible to check the whole currency base of Steam in rea
 ```
 git clone https://github.com/KerbsOpenSource/steam-currency-parser
 cd steam-currency-parser/cmd
-go build main.go
+go build -o steam-currency-parser main.go
 ```
