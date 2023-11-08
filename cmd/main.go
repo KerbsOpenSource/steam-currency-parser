@@ -109,8 +109,7 @@ func correctValueUnite(value, appID, marketHashName string) int {
 	return priceInt
 }
 
-// You need to find an item on the steam market that will serve as an item for a comparable price
-// You can write down how much you need to divide by to get values ​​for 1 unit
+
 func main() {
 	telegramBotToken, chatID, appID, marketHashName := mustFlags()
 	currencies := currencyDictionary()
