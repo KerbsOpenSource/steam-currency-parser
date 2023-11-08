@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"steam-currency-parser/internal/regex"
 	"steam-currency-parser/internal/steam"
 	"steam-currency-parser/internal/telegram"
@@ -11,12 +12,11 @@ import (
 	"time"
 )
 
-func mustFlags() (telegramBotToken, chatID, appID, marketHashName string, priceCorrertor int) {
+func mustFlags() (telegramBotToken, chatID, appID, marketHashName string) {
 	flag.StringVar(&telegramBotToken, "token", "", "Telegram bot token")
 	flag.StringVar(&chatID, "chatid", "", "Telegram chat id")
 	flag.StringVar(&appID, "appid", "", "Steam appID")
 	flag.StringVar(&marketHashName, "hashname", "", "Steam market item hash name")
-	flag.IntVar(&priceCorrertor, "pricecor", 1000, "Price corrector to get 1 unite price")
 
 	flag.Parse()
 	if telegramBotToken == "" {
@@ -85,11 +85,16 @@ func currencyDictionary() map[string]string {
 }
 
 func textMessageСurrency(currencies map[string]float64) string {
-	textMessage := fmt.Sprintf("🇪🇺 EUR: %.2f€\n🇨🇳 CNY: ¥ %.2f\n🇯🇵 JPY: ¥ %.2f\n🇦🇪 AED: د %.2f\n🇷🇺 RUB: %.2f ₽", currencies["EUR"], currencies["CNY"], currencies["JPY"], currencies["AED"], currencies["RUB"])
+	usd := currencies["EUR"]
+	cny := currencies["CNY"]
+	jpy := currencies["JPY"]
+	aed := currencies["AED"]
+	rub := currencies["RUB"]
+	textMessage := fmt.Sprintf("🇪🇺 EUR: %.2f€\n🇨🇳 CNY: ¥ %.2f\n🇯🇵 JPY: ¥ %.2f\n🇦🇪 AED: د %.2f\n🇷🇺 RUB: %.2f ₽", usd, cny, jpy, aed, rub)
 	return textMessage
 }
 
-func correctValueUnite(value string, expected float64, appID string, marketHashName string, priceCorrertor int) {
+func correctValueUnite(value, appID, marketHashName string) int {
 	price, err := steam.LowestPrice(appID, value, marketHashName)
 	if err != nil {
 		log.Fatal(err)
@@ -101,21 +106,16 @@ func correctValueUnite(value string, expected float64, appID string, marketHashN
 	if err != nil {
 		log.Fatal(err)
 	}
-	total := float64(priceInt / priceCorrertor)
-	if total != expected {
-		log.Fatal("Failed to receive 1.00$. Check the lowest price of the lot and priceCorrertor WHEN DIVIDING we should receive 100")
-	}
+	return priceInt
 }
 
 // You need to find an item on the steam market that will serve as an item for a comparable price
 // You can write down how much you need to divide by to get values ​​for 1 unit
-// Example priceItem = 200000 USD, priceCorrertor = 1000, unitPrice = (200000/100) / (1000/100) = 200 = 2 / 100  = 2.00 USD
-// priceCorrertor := 1000.00
 func main() {
-	telegramBotToken, chatID, appID, marketHashName, priceCorrertor := mustFlags()
+	telegramBotToken, chatID, appID, marketHashName := mustFlags()
 	currencies := currencyDictionary()
 	resultCurrencies := make(map[string]float64)
-	correctValueUnite(currencies["USD"], 100, appID, marketHashName, priceCorrertor)
+	priceCorrertor := correctValueUnite(currencies["USD"], appID, marketHashName)
 	for key, value := range currencies {
 		if key == "USD" {
 			continue
@@ -133,7 +133,9 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		resultCurrencies[key] = float64(priceInt/priceCorrertor) / 100
+		result := float64(priceInt) / float64(priceCorrertor)
+		result = math.Trunc(result*100) / 100
+		resultCurrencies[key] = result
 	}
 	textMessage := textMessageСurrency(resultCurrencies)
 	telegram.SendMessage(textMessage, telegramBotToken, chatID)
