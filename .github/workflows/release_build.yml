@@ -20,7 +20,6 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.21.3
-          workdir: ./...
         id: go
 
       - name: Run GoReleaser
@@ -28,5 +27,6 @@ jobs:
         with:
           version: latest
           args: release --rm-dist
+          main: ./cmd/main.go
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN  }}
