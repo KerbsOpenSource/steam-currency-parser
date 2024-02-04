@@ -55,7 +55,6 @@ func currencyDictionary() map[string]string {
 	// dictionary["THB"] = "14" // Thai Baht
 	// dictionary["VND"] = "15" // Vietnamese Dong
 	// dictionary["KRW"] = "16" // South Korean Won
-	// dictionary["TRY"] = "17" // Turkish Lira
 	// dictionary["UAH"] = "18" // Ukrainian Hryvnia
 	// dictionary["MXN"] = "19" // Mexican Peso
 	// dictionary["CAD"] = "20" // Canadian Dollars
@@ -71,7 +70,6 @@ func currencyDictionary() map[string]string {
 	// dictionary["TWD"] = "30" // New Taiwan Dollar
 	// dictionary["SAR"] = "31" // Saudi Riyal
 	dictionary["AED"] = "32" // United Arab Emirates Dirham
-	// dictionary["ARS"] = "34" // Argentine Peso
 	// dictionary["ILS"] = "35" // Israeli New Shekel
 	// dictionary["KZT"] = "37" // Kazakhstani Tenge
 	// dictionary["KWD"] = "38" // Kuwaiti Dinar
