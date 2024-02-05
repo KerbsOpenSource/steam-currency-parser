@@ -1,4 +1,5 @@
 # Steam currency parser
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/KerbsOpenSource/steam-currency-parser/total)  
 Automatic sending to telegeram. Example: [t.me/SteamCurrencyUpdate](https://t.me/s/SteamCurrencyUpdate)
 ## 🤔 What is this?
 This app is used to check real-time currency adjustments for Steam and has a complete currency database. I don't see any other way to use it except notification in telegram, as it's not a stock exchange, it's still an open source project and you can do what you want.
